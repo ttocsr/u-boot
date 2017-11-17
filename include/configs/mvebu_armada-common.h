@@ -36,16 +36,16 @@
 #define CONFIG_ETHPRIME			"eth0"
 #define CONFIG_ROOTPATH                 "/srv/nfs" /* Default Dir for NFS */
 #define CONFIG_EXTRA_ENV_SETTINGS	"kernel_addr=0x2000000\0"	\
-					"offset_kernel 0x200000\0"	\
+					"offset_kernel=0x200000\0"	\
 					"initrd_addr=0xa00000\0"	\
 					"initrd_size=0x2000000\0"	\
 					"fdt_addr=0x1000000\0"		\
-					"offset_dtb 0xd00000\0"		\
+					"offset_dtb=0xd00000\0"		\
 					"loadaddr=0x2000000\0"		\
 					"fdt_high=0xffffffffffffffff\0"	\
 					"hostname=uDPU\0"		\
 					"ramfs_addr=0x3000000\0"	\
-					"offset_ramfs 0xd10000\0"	\
+					"offset_ramfs=0xd10000\0"	\
 					"ramfs_name=-\0"		\
 					"ramfs_image_size=-\0"		\
 					"fdt_name=armada-3720-db-sfp.dtb\0"		\
