@@ -1,4 +1,4 @@
-/*
+/* 
  * Device Tree file for Marvell Armada 3720 development board
  * (DB-88F3720-DDR3)
  * Copyright (C) 2016 Marvell
@@ -71,10 +71,10 @@
 	ethphy0: ethernet-phy@0 {
 		reg = <0>;
 	};
-	ethphy1: ethernet-phy@1 {
-		reg = <1>;
-	};
-
+/*	ethphy1: ethernet-phy@1 {
+*		reg = <1>;
+*	};
+*/
 };
 
 &comphy {
@@ -103,17 +103,17 @@
 	};
 };
 
-&eth1 {
-        pinctrl-0 = <&pcie_pins>;
-        status = "okay";
-        phy-mode = "sgmii";
-        phy = <&ethphy1>;
-        fixed-link {
-                speed = <1000>;
-                full-duplex;
-        };
-};
-
+/*&eth1 {
+*        pinctrl-0 = <&pcie_pins>;
+*        status = "okay";
+*        phy-mode = "sgmii";
+*        phy = <&ethphy1>;
+*        fixed-link {
+*                speed = <1000>;
+*                full-duplex;
+*        };
+*};
+*/
 &scsi {
 	status = "okay";
 };
@@ -132,24 +132,12 @@
 	spi-flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "mt25qu01g";
+		compatible = "st,n25q1024a", "spi-flash";
 		reg = <0>; /* Chip select 0 */
 		spi-max-frequency = <50000000>;
 		spi-rx-bus-width = <4>;
 		spi-tx-bus-width = <4>;
 		m25p,fast-read;
-		partition@0 {
-			label = "Bootloader";
-			reg = <0 0x100000>;
-		};
-		partition@100000 {
-			label = "Kernel";
-			reg = <0x100000 0xC00000>;
-		};
-		partition@D00000 {
-			label = "RootFileSystem";
-			reg = <0xD00000 0x21D0000>;
-		};
 	};
 };
 

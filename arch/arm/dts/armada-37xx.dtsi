@@ -46,6 +46,7 @@
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/comphy/comphy_data.h>
+#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Marvell Armada 37xx SoC";
@@ -56,6 +57,7 @@
 
 	aliases {
 		serial0 = &uart0;
+		serial1 = &uart1;
 	};
 
 	cpus {
@@ -101,8 +103,117 @@
 
 			uart0: serial@12000 {
 				compatible = "marvell,armada-3700-uart";
-				reg = <0x12000 0x400>;
+				reg = <0x12000 0x200>;
 				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+				status = "disabled";
+			};
+
+			uart1: serial@12200 {
+				compatible = "marvell,armada-3700-uart-ext";
+				reg = <0x12200 0x30>;
+				interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+				status = "disabled";
+			};
+
+			usb3: usb@58000 {
+				compatible = "marvell,armada3700-xhci",
+				"generic-xhci";
+				reg = <0x58000 0x4000>;
+				interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+				status = "disabled";
+			};
+
+			usb2: usb@5e000 {
+				compatible = "marvell,armada3700-ehci";
+				reg = <0x5e000 0x450>;
+				status = "disabled";
+			};
+
+			xor@60900 {
+				compatible = "marvell,armada-3700-xor";
+				reg = <0x60900 0x100
+				       0x60b00 0x100>;
+
+				xor10 {
+					interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
+				};
+				xor11 {
+					interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+				};
+			};
+
+			sdhci0: sdhci@d0000 {
+				compatible = "marvell,armada-3700-sdhci",
+				"marvell,sdhci-xenon";
+				reg = <0xd0000 0x300
+				       0x1e808 0x4>;
+				status = "disabled";
+			};
+
+			sdhci1: sdhci@d8000 {
+				compatible = "marvell,armada-3700-sdhci",
+				"marvell,sdhci-xenon";
+				reg = <0xd8000 0x300
+				       0x17808 0x4>;
+				status = "disabled";
+			};
+
+			scsi: scsi {
+				compatible = "marvell,mvebu-scsi";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				max-id = <1>;
+				max-lun = <1>;
+				status = "disabled";
+				sata: sata@e0000 {
+					compatible = "marvell,armada-3700-ahci";
+					reg = <0xe0000 0x2000>;
+					interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+					status = "disabled";
+				};
+			};
+
+			gic: interrupt-controller@1d00000 {
+				compatible = "arm,gic-v3";
+				#interrupt-cells = <3>;
+				interrupt-controller;
+				reg = <0x1d00000 0x10000>, /* GICD */
+				      <0x1d40000 0x40000>; /* GICR */
+			};
+
+			eth0: neta@30000 {
+				compatible = "marvell,armada-3700-neta";
+				reg = <0x30000 0x20>;
+				status = "disabled";
+			};
+
+			mdio: mdio@32004 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+			};
+
+			eth1: neta@40000 {
+				compatible = "marvell,armada-3700-neta";
+				reg = <0x40000 0x20>;
+				status = "disabled";
+			};
+
+			i2c0: i2c@11000 {
+				compatible = "marvell,armada-3700-i2c", "simple-bus";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0x11000 0x100>;
+				status = "disabled";
+			};
+
+			spi0: spi@10600 {
+				compatible = "marvell,armada-3700-spi";
+				reg = <0x10600 0x50>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				#clock-cells = <0>;
+				clock-frequency = <160000>;
+				spi-max-frequency = <40000>;
 				status = "disabled";
 			};
 
@@ -154,6 +265,11 @@
 					groups = "uart2";
 					function = "uart";
 				};
+
+				mmc_pins: mmc-pins {
+					groups = "emmc_nb";
+					function = "emmc";
+				};
 			};
 
 			pinctrl_sb: pinctrl-sb@18800 {
@@ -162,7 +278,7 @@
 				reg = <0x18800 0x100>, <0x18C00 0x20>;
 				gpiosb: gpiosb {
 					#gpio-cells = <2>;
-					gpio-ranges = <&pinctrl_sb 0 0 29>;
+					gpio-ranges = <&pinctrl_sb 0 0 30>;
 					gpio-controller;
 					interrupts =
 					<GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
@@ -177,116 +293,43 @@
 					function = "mii";
 				};
 
-			};
-
-			usb3: usb@58000 {
-				compatible = "marvell,armada3700-xhci",
-				"generic-xhci";
-				reg = <0x58000 0x4000>;
-				interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
-				status = "disabled";
-			};
-
-			usb2: usb@5e000 {
-				compatible = "marvell,armada3700-ehci";
-				reg = <0x5e000 0x450>;
-				status = "disabled";
-			};
-
-			xor@60900 {
-				compatible = "marvell,armada-3700-xor";
-				reg = <0x60900 0x100
-				       0x60b00 0x100>;
-
-				xor10 {
-					interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
+				smi_pins: smi-pins {
+					groups = "smi";
+					function = "smi";
 				};
-				xor11 {
-					interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+
+				sdio_pins: sdio-pins {
+					groups = "sdio_sb";
+					function = "sdio";
 				};
-			};
 
-			sdhci0: sdhci@d0000 {
-				compatible = "marvell,armada-3700-sdhci",
-				"marvell,sdhci-xenon";
-				reg = <0xd0000 0x300
-				       0x1e808 0x4>;
-				status = "disabled";
-			};
-
-			sdhci1: sdhci@d8000 {
-				compatible = "marvell,armada-3700-sdhci",
-				"marvell,sdhci-xenon";
-				reg = <0xd8000 0x300
-				       0x17808 0x4>;
-				status = "disabled";
-			};
-
-			sata: sata@e0000 {
-				compatible = "marvell,armada-3700-ahci";
-				reg = <0xe0000 0x2000>;
-				interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-				status = "disabled";
-			};
-
-			gic: interrupt-controller@1d00000 {
-				compatible = "arm,gic-v3";
-				#interrupt-cells = <3>;
-				interrupt-controller;
-				reg = <0x1d00000 0x10000>, /* GICD */
-				      <0x1d40000 0x40000>; /* GICR */
-			};
-
-			eth0: neta@30000 {
-				compatible = "marvell,armada-3700-neta";
-				reg = <0x30000 0x20>;
-				status = "disabled";
-			};
-
-			eth1: neta@40000 {
-				compatible = "marvell,armada-3700-neta";
-				reg = <0x40000 0x20>;
-				status = "disabled";
-			};
-
-			i2c0: i2c@11000 {
-				compatible = "marvell,armada-3700-i2c";
-				reg = <0x11000 0x100>;
-				status = "disabled";
-			};
-
-			spi0: spi@10600 {
-				compatible = "marvell,armada-3700-spi";
-				reg = <0x10600 0x50>;
-				#address-cells = <1>;
-				#size-cells = <0>;
-				#clock-cells = <0>;
-				clock-frequency = <160000>;
-				spi-max-frequency = <40000>;
-				status = "disabled";
-			};
-
-			pinctl0: pinctl@13830 { /* north bridge */
-				compatible = "marvell,armada-3700-pinctl";
-				bank-name = "armada-3700-nb";
-				reg = <0x13830 0x4>;
-				pin-count = <36>;
-			};
-
-			pinctl1: pinctl@18830 { /* south bridge */
-				compatible = "marvell,armada-3700-pinctl";
-				bank-name = "armada-3700-sb";
-				reg = <0x18830 0x4>;
-				pin-count = <30>;
+				pcie_pins: pcie-pins {
+					groups = "pcie1";
+					function = "gpio";
+				};
 			};
 
 			comphy: comphy@18300 {
 				compatible = "marvell,mvebu-comphy", "marvell,comphy-armada-3700";
 				reg = <0x18300 0x28>,
 				      <0x1f300 0x3d000>;
-				mux-bitcount = <1>;
-				max-lanes = <2>;
+				mux-bitcount = <4>;
+				max-lanes = <3>;
 			};
+		};
+
+		pcie0: pcie@d0070000 {
+			compatible = "marvell,armada-37xx-pcie";
+			reg = <0 0xd0070000 0 0x20000>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			num-lanes = <1>;
+			status = "disabled";
+
+			bus-range = <0 0xff>;
+			ranges = <0x82000000 0 0xe8000000   0 0xe8000000 0 0x1000000 /* Port 0 MEM */
+				  0x81000000 0 0xe9000000   0 0xe9000000 0 0x10000>; /* Port 0 IO*/
 		};
 	};
 };

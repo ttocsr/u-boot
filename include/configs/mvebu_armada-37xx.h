@@ -7,9 +7,22 @@
 #ifndef _CONFIG_MVEBU_ARMADA_37XX_H
 #define _CONFIG_MVEBU_ARMADA_37XX_H
 
+#define CONFIG_DEFAULT_CONSOLE		"console=ttyMV0,115200 "\
+					"earlycon=ar3700_uart,0xd0012000"
+
+/* USB 2.0 */
+/*#define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS 1*/
+
+/* USB 3.0 */
+/*#define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS 2*/
+
+#include <configs/mvebu_armada-common.h>
+
 /*
  * High Level Configuration Options (easy to change)
  */
+/*#define CONFIG_NR_DRAM_BANKS	4*/
+
 #define CONFIG_DISPLAY_BOARDINFO_LATE
 
 #define	CONFIG_SYS_TEXT_BASE	0x00000000
@@ -17,7 +30,7 @@
 /* additions for new ARM relocation support */
 #define CONFIG_SYS_SDRAM_BASE	0x00000000
 
-#define CONFIG_NR_DRAM_BANKS	1
+#define CONFIG_NR_DRAM_BANKS	4
 
 /* auto boot */
 #define CONFIG_PREBOOT
@@ -65,6 +78,9 @@
 #define CONFIG_I2C_MV
 #define CONFIG_SYS_I2C_SLAVE		0x0
 
+/* Environment in MMC */
+#define CONFIG_SYS_MMC_ENV_DEV		1 /* 0 means sdio, 1 means mmc. */
+
 /*
  * SPI Flash configuration
  */
@@ -75,6 +91,11 @@
 #define CONFIG_SF_DEFAULT_SPEED		1000000
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_0
 #define CONFIG_ENV_SPI_MODE		CONFIG_SF_DEFAULT_MODE
+#define CONFIG_SPI_FLASH_BAR
+
+/* MTD device */
+# define CONFIG_MTD_DEVICE
+# define CONFIG_MTD_PARTITIONS
 
 /* Environment in SPI NOR flash */
 #define CONFIG_ENV_OFFSET		0x180000 /* as Marvell U-Boot version */
@@ -87,9 +108,9 @@
 #define CONFIG_ENV_OVERWRITE	/* ethaddr can be reprogrammed */
 #define CONFIG_ARP_TIMEOUT	200
 #define CONFIG_NET_RETRY_COUNT	50
+#define CONFIG_MVNETA           /* Enable Marvell Gbe Controller Driver */
 #define CONFIG_PHY_MARVELL
-
-#define CONFIG_USB_MAX_CONTROLLER_COUNT (3 + 3)
+/*#define CONFIG_USB_MAX_CONTROLLER_COUNT (3 + 3)*/
 
 /* USB ethernet */
 
@@ -109,4 +130,11 @@
 
 #define CONFIG_SUPPORT_VFAT
 
+/*
+ * PCI configuration
+ */
+#ifdef CONFIG_PCIE_ADVK
+#define CONFIG_E1000
+#define CONFIG_CMD_PCI
+#endif
 #endif /* _CONFIG_MVEBU_ARMADA_37XX_H */
